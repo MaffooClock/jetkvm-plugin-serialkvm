@@ -2,6 +2,7 @@ package plugin
 
 import (
   "context"
+  "encoding/json"
   "github.com/sourcegraph/jsonrpc2"
 )
 
@@ -17,17 +18,15 @@ type SupportedMethodsResponse struct {
 type PluginHandler interface {
   GetPluginSupportedMethods(ctx context.Context) (SupportedMethodsResponse, error)
   GetPluginStatus(ctx context.Context) (PluginStatus, error)
-  //// Is this how I call the SwitchInput function?
-  //DoSwitchInput(ctx context.Context, params json.RawMessage) (???, error)
+  DoSwitchInput(ctx context.Context, params *json.RawMessage) error
 }
 
 func HandleRPC(handler PluginHandler) jsonrpc2.Handler {
   return jsonrpc2.HandlerWithError(func(ctx context.Context, conn *jsonrpc2.Conn, req *jsonrpc2.Request) (interface{}, error) {
 
     switch req.Method {
-    //case "switchInput":
-    //// is this where the command from the UI to switch the input is dispatched?
-    //	return handler.DoSwitchInput(ctx, req.Params)
+    case "switchInput":
+      return nil, handler.DoSwitchInput(ctx, req.Params)
     case "getPluginSupportedMethods":
       return handler.GetPluginSupportedMethods(ctx)
     case "getPluginStatus":

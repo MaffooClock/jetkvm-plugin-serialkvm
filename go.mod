@@ -1,4 +1,4 @@
-module github.com/MaffooClock/jetkvm-plugin-serialkvm
+module serialkvm
 
 go 1.23
 

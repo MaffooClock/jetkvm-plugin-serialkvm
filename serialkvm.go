@@ -3,44 +3,43 @@ package main
 import (
 	"fmt"
 	"log"
-	"time"
 
 	"go.bug.st/serial"
 )
 
-type SerialConfig struct {
-	BaudRate int
-	DataBits int
-	StopBits int
-	Parity   int
-	Timeout  time.Duration
-}
-
-func DefaultConfig() *serial.Mode {
-	return &serial.Mode{
-		BaudRate: 115200,
-	}
-}
-
 func (p *PluginImpl) NewSerialPort() error {
-	port, err := serial.Open("/dev/ttyS3", DefaultConfig())
-	p.serialPort = port
+	if p.serialPort != nil {
+		return nil
+	}
+
+	LoadConfig()
+
+	port, err := serial.Open(config.Device, &config.SerialMode)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to open serial port: %w", err)
 	}
 	defer port.Close()
+
+	p.serialPort = port
+
+	log.Printf("Opened port %s\n", config.Device)
 
 	return nil
 }
 
-func (p *PluginImpl) SwitchInput(inputNumber string) error {
+func (p *PluginImpl) SwitchInput(inputNumber int) error {
 
-	command := fmt.Sprintf("X%s,1$", inputNumber)
+	if inputNumber > len(config.Inputs) {
+		return fmt.Errorf("invalid input number: %d", inputNumber)
+	}
+
+	command := config.Inputs[inputNumber].ControlMessage
 	_, err := p.serialPort.Write([]byte(command))
 	if err != nil {
-		log.Fatal(err)
+		return fmt.Errorf("failed to send command: %w", err)
 	}
-	log.Println("Switched to input ", inputNumber)
+
+	log.Printf("Switched to input %d\n", inputNumber)
 
 	return nil
 }

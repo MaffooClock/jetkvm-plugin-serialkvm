@@ -8,10 +8,10 @@ import (
 	"os"
 	"os/signal"
 
-	"github.com/MaffooClock/jetkvm-plugin-serialkvm/plugin"
 	"github.com/caarlos0/env"
 	"github.com/sourcegraph/jsonrpc2"
 	"go.bug.st/serial"
+	"serialkvm/plugin"
 )
 
 var version = "0.0.1"
@@ -28,7 +28,7 @@ var PluginConfig struct {
 func connect(ctx context.Context) (*PluginImpl, error) {
 	conn, err := net.Dial("unix", PluginConfig.PluginSocket)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to connect to socket: %w", err)
 	}
 
 	impl := &PluginImpl{}
@@ -39,6 +39,8 @@ func connect(ctx context.Context) (*PluginImpl, error) {
 }
 
 func main() {
+	log.Println("Starting SerialKVM plugin")
+
 	env.Parse(&PluginConfig)
 
 	ctx, cancel := context.WithCancel(context.Background())
@@ -54,19 +56,23 @@ func main() {
 
 	impl, err := connect(ctx)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalln(err)
 	}
 	defer impl.client.Close()
 
-	log.Println("client started")
+	if len(config.Inputs) < 1 {
+		log.Fatalln("No input configured")
+	}
 
 	err = impl.NewSerialPort()
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalln(err)
 	}
 	defer impl.serialPort.Close()
 
 	//...
+
+	log.Println("plugin started")
 
 	<-ctx.Done()
 }

@@ -60,9 +60,10 @@ func main() {
 	}
 	defer impl.client.Close()
 
-	if len(config.Inputs) < 1 {
-		log.Fatalln("No input configured")
-	}
+	// TODO: don't kill the process (maybe?), but set the status to "pending-configuration"
+	//if len(config.Inputs) < 1 {
+	//	log.Fatalln("No input configured")
+	//}
 
 	err = impl.NewSerialPort()
 	if err != nil {

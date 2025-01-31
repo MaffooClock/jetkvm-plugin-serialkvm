@@ -4,5 +4,5 @@
   "version": "0.0.1",
   "description": "Provides support for serial-attached KVM on JetKVM",
   "homepage": "https://github.com/MaffooClock/jetkvm-plugin-serialkvm",
-  "bin": "./jetkvm-plugin-serialkvm"
+  "bin": "./serialkvm"
 }

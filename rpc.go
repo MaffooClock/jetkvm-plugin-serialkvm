@@ -20,11 +20,15 @@ func (p *PluginImpl) GetPluginSupportedMethods(ctx context.Context) (plugin.Supp
 
 func (p *PluginImpl) GetPluginStatus(ctx context.Context) (plugin.PluginStatus, error) {
 
+	LoadConfig()
+
 	var status string
-	if p.serialPort == nil {
+	if len(config.Inputs) < 1 {
 		status = "pending-configuration"
+	} else if p.serialPort == nil {
+		status = "loading"
 	} else {
-		status = "ready"
+		status = "running"
 	}
 
 	return plugin.PluginStatus{

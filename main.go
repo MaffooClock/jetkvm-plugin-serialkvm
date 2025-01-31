@@ -22,7 +22,8 @@ type PluginImpl struct {
 }
 
 var PluginConfig struct {
-	PluginSocket string `env:"JETKVM_PLUGIN_SOCK" envDefault:"./tmp/plugin.sock"`
+	PluginSocket     string `env:"JETKVM_PLUGIN_SOCK" envDefault:"./tmp/plugin.sock"`
+	PluginWorkingDir string `env:"JETKVM_PLUGIN_WORKING_DIR" envDefault:"./tmp"`
 }
 
 func connect(ctx context.Context) (*PluginImpl, error) {
@@ -31,15 +32,14 @@ func connect(ctx context.Context) (*PluginImpl, error) {
 		return nil, fmt.Errorf("failed to connect to socket: %w", err)
 	}
 
-	impl := &PluginImpl{}
-	client := jsonrpc2.NewConn(ctx, jsonrpc2.NewPlainObjectStream(conn), plugin.HandleRPC(impl))
-	impl.client = client
+	p := &PluginImpl{}
+	client := jsonrpc2.NewConn(ctx, jsonrpc2.NewPlainObjectStream(conn), plugin.HandleRPC(p))
+	p.client = client
 
-	return impl, nil
+	return p, nil
 }
 
 func main() {
-	log.Println("Starting SerialKVM plugin")
 
 	env.Parse(&PluginConfig)
 
@@ -54,26 +54,25 @@ func main() {
 
 	log.Default().SetPrefix("[jetkvm-plugin-serialkvm v" + version + "] ")
 
-	impl, err := connect(ctx)
+	p, err := connect(ctx)
 	if err != nil {
 		log.Fatalln(err)
 	}
-	defer impl.client.Close()
+	defer p.client.Close()
 
-	// TODO: don't kill the process (maybe?), but set the status to "pending-configuration"
-	//if len(config.Inputs) < 1 {
-	//	log.Fatalln("No input configured")
+	log.Println("rpc client started")
+
+	// TODO: maybe we don't need to open the port right now,
+	//       and do it later when `SwitchInput` is called?
+	//err = p.OpenSerialPort()
+	//if err != nil {
+	//	log.Fatalln(err)
 	//}
-
-	err = impl.NewSerialPort()
-	if err != nil {
-		log.Fatalln(err)
-	}
-	defer impl.serialPort.Close()
-
-	//...
-
-	log.Println("plugin started")
+	//defer p.CloseSerialPort()
+	//
+	//log.Println("plugin started")
 
 	<-ctx.Done()
+
+	log.Println("we go bye-bye?")
 }

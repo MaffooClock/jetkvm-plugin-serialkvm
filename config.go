@@ -9,7 +9,7 @@ import (
 )
 
 type KvmInput struct {
-	ControlMessage string `json:"vendor_id"`
+	ControlMessage string `json:"command"`
 }
 
 type Config struct {
@@ -28,6 +28,7 @@ var defaultConfig = &Config{
 		Parity:   serial.NoParity,
 		StopBits: serial.OneStopBit,
 	},
+	Inputs: []KvmInput{},
 }
 
 var config *Config

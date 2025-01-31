@@ -7,7 +7,7 @@ import (
 )
 
 type PluginStatus struct {
-	Status  string  `json:"status" oneOf:"pending-configuration,ready,error"`
+	Status  string  `json:"status" oneOf:"pending-configuration,running,error"`
 	Message *string `json:"message,omitempty"`
 }
 
@@ -23,6 +23,9 @@ type PluginHandler interface {
 
 func HandleRPC(handler PluginHandler) jsonrpc2.Handler {
 	return jsonrpc2.HandlerWithError(func(ctx context.Context, conn *jsonrpc2.Conn, req *jsonrpc2.Request) (interface{}, error) {
+
+		//b, _ := json.Marshal(req)
+		//log.Printf("Received request: %s", string(b))
 
 		switch req.Method {
 		case "switchInput":

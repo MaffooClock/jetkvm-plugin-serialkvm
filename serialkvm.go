@@ -47,7 +47,7 @@ func (p *PluginImpl) SwitchInput(inputNumber int) error {
 
 	LoadConfig()
 
-	if inputNumber > len(config.Inputs) {
+	if inputNumber < 1 || inputNumber > len(config.Inputs) {
 		return fmt.Errorf("invalid input number: %d", inputNumber)
 	}
 
@@ -55,7 +55,9 @@ func (p *PluginImpl) SwitchInput(inputNumber int) error {
 		return err
 	}
 
-	command := config.Inputs[inputNumber].ControlMessage
+	command := config.Inputs[inputNumber-1].ControlMessage
+	log.Printf("Sending command: %s", command)
+
 	_, err := p.serialPort.Write([]byte(command))
 	if err != nil {
 		return fmt.Errorf("failed to send command: %w", err)

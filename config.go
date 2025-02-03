@@ -40,7 +40,7 @@ func LoadConfig() {
 
 	file, err := os.Open(configPath)
 	if err != nil {
-		log.Println("default config file doesn't exist, using default")
+		log.Println("config file doesn't exist, using defaults")
 		config = defaultConfig
 		return
 	}

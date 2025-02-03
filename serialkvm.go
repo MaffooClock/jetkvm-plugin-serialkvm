@@ -29,8 +29,7 @@ func (p *PluginImpl) OpenSerialPort() error {
 	LoadConfig()
 
 	if len(config.Inputs) < 1 {
-		log.Printf("no inputs configured; serial port will not be opened")
-		return nil
+		return fmt.Errorf("no inputs configured; serial port will not be opened")
 	}
 
 	port, err := serial.Open(config.Device, &config.SerialMode)
@@ -45,6 +44,8 @@ func (p *PluginImpl) OpenSerialPort() error {
 }
 
 func (p *PluginImpl) SwitchInput(inputNumber int) error {
+
+	LoadConfig()
 
 	if inputNumber > len(config.Inputs) {
 		return fmt.Errorf("invalid input number: %d", inputNumber)

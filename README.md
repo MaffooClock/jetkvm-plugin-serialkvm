@@ -15,9 +15,7 @@ I shamelessly stole @tutman96's [Tailscale plugin](https://github.com/tutman96/j
 ## To-do:
 
 - [x] Basic functionality for connecting to, configuring, and writing to a local serial port
-
 - [ ] Configure number of inputs, and the serial command for each one <sup>1</sup>
-
 - [ ] Display a dropdown in the Action Bar for switching the input on the remote KVM <sup>2</sup>
 
 **Notes:**

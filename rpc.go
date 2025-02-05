@@ -38,10 +38,6 @@ func (p *PluginImpl) GetPluginStatus(ctx context.Context) (plugin.PluginStatus, 
 
 func (p *PluginImpl) DoSwitchInput(ctx context.Context, params *json.RawMessage) error {
 
-	// So... Unmarshal the `params` so we can get the one that
-	// has the selected input the user wants to switch to. But
-	// before we can make that work, we need to setup a Struct
-	// to define what a `param` looks like... I think?
 	var request SwitchInputRequest
 
 	err := json.Unmarshal(*params, &request)
